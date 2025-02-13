@@ -8,6 +8,9 @@ import logging
 # Configure logging to output to console
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+# Set boto3 and botocore logging level to WARNING to prevent logging sensitive information
+logging.getLogger('boto3').setLevel(logging.WARNING)
+logging.getLogger('botocore').setLevel(logging.WARNING)
 
 app = FastAPI()
 

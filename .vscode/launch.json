@@ -20,7 +20,8 @@
       "env": {
         "PYTHONPATH": "${workspaceFolder}/app"
       },
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "python": "${workspaceFolder}/app/venv/bin/python3"
     }
   ]
 }
