@@ -27,7 +27,7 @@ Manual steps to create Aqua app in AWS
 - Create FastAPI app
   Python is installed. But need to install python3.10-venv for virtual env
     sudo apt install python3.10-venv
-    mkdir /home/ubuntu/src/examples/mgtsvr/app
+    mkdir /home/ubuntu/src/mgtsvr/app
     then create private env
       python3 -m venv venv
       source venv/bin/activate (deactivate to shutdown virtual env)

@@ -20,7 +20,8 @@
         "ec2:DescribeTags",
         "ec2:DescribeLaunchTemplateVersions",
         "ec2:DescribeSecurityGroups",
-        "ec2:DescribeInstanceStatus"
+        "ec2:DescribeInstanceStatus",
+        "secretsmanager:GetSecretValue"    
       ],
       "Resource": "*"
     },
