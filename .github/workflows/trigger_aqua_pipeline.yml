@@ -1,0 +1,37 @@
+name: Trigger Aqua pipeline
+on:
+  workflow_dispatch:
+    inputs:
+      custom_payload:
+        description: 'Optional JSON payload'
+        required: false
+        default: '{aqua: "trigger pipeline"}'
+
+jobs:
+  trigger-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare payload
+        id: prepare_payload
+        run: |
+          # Write the custom payload to a file (or use default JSON)
+          echo "${{ github.event.inputs.custom_payload }}" > payload.json
+          cat payload.json
+
+      - name: Compute HMAC signature
+        id: sign_payload
+        env:
+          WEBHOOK_SECRET: ${{ secrets.MGTSVR_WEBHOOK_SECRET }}
+        run: |
+          # Compute the HMAC SHA-256 signature in the same format GitHub webhooks use.
+          SIGNATURE=$(cat payload.json | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | awk '{print $2}')
+          echo "::set-output name=signature::sha256=$SIGNATURE"
+          echo "Computed signature: sha256=$SIGNATURE"
+
+      - name: Send webhook request
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Hub-Signature-256: ${{ steps.sign_payload.outputs.signature }}" \
+            --data @payload.json \
+            http://34.213.80.7:5011/mgtapi
