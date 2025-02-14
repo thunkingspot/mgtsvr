@@ -15,8 +15,9 @@ jobs:
         id: prepare_payload
         run: |
           # Write the custom payload to a file (or use default JSON)
-          echo "${{ github.event.inputs.custom_payload }}" > payload.json
+          printf '%s' "${{ github.event.inputs.custom_payload }}" > payload.json
           cat payload.json
+          xxd payload.json
 
       - name: Compute HMAC signature
         id: sign_payload
