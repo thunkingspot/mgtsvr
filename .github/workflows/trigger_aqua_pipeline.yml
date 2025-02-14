@@ -34,5 +34,5 @@ jobs:
             -H "Content-Type: application/json" \
             -H "X-Hub-Signature-256: ${{ steps.sign_payload.outputs.signature }}" \
             --data @payload.json \
+            --fail \
             http://34.213.80.7:5011/mgtapi
-          --fail
