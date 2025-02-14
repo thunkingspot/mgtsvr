@@ -45,9 +45,9 @@ Manual steps to create Aqua app in AWS
     sudo chown -R www-data:www-data /var/www/aqua_app
     sudo chmod -R 755 /var/www/aqua_app
 - Modify appinfra/nginx_aqua.conf to work with app files.
-  setting the proxy for /api/ means that the api will be stripped from the request and should not be included in the routes on the app side
+  setting the proxy for /api/ means that the api will be stripped from the request and if you want the routes to refer to it make sure the proxy_pass line in the conf includes it - e.g. - http://localhost:8000/mgtapi
 - Create a symbolic link to enable the configuration by linking it to the sites-enabled directory.
-  sudo ln -s /home/ubuntu/src/examples/mgtsvr/appinfra/nginx_mgtapi.conf /etc/nginx/sites-enabled/
+  sudo ln -s /home/ubuntu/src/mgtsvr/appinfra/nginx_mgtapi.conf /etc/nginx/sites-enabled/
 - Remove the default Nginx configuration link to avoid conflicts.
   sudo rm /etc/nginx/sites-enabled/default
 - Test Nginx configuration to ensure there are no syntax errors.
@@ -101,6 +101,6 @@ Manual steps to create Aqua app in AWS
   3. libglibgl1-mesa-glx and libglib2.0-0 are dependencies for opencv (cv2 - used by the app). It was not included as part of the python virtual env because it was already installed for the OS. This should be installed as part of the dockerfile. (Could it be installed in the venv?)
 - Management Instance
   Need to back up step and think about how the management instance will be configured. In the extreme it could be containerized as well but it seems like it would be suitable to just configure the instance and create an AMI that can be instantiated if more are needed. There would need to be some late bound conf if more than one is needed and it wouldn't take long before now that start sounding like a cluster of managment instances running behind a load balancer... blah blah. Let's just not go there. We may want this to be a lighter weight instance (no ui) that is separate from the desktop instance. But... maybe not. For the moment we need to support a webhook tcp server for triggering. So some of the config will move out of aqua and into mgtsvr. Aqua is targeted for automated deployment. mgtsvr not so much.
-  1. Create a security group to allow webhook access to the management instance (sg-0669c0b51e9894f4d - management-webhook-sg), allow only the managment instance IP and the github ip range. Not using SSL, but payload is encrypted.
+  1. Create a security group to allow webhook access to the management instance (sg-0669c0b51e9894f4d - management-webhook-sg), allow only the managment instance IP and the github ip range. Not using SSL, but payload is encrypted.  
   2. remove the symbolic link to nginx_aqua.conf in the aqua project and replace it with the nginx_mgtapi.conf
   3. add the webhook secret to aws secret manager and as a github repository secret. Don't use a webhook defined by github. Use a workflow_dispatch action and emulate the webhook encryption approach.
