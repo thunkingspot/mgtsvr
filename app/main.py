@@ -62,8 +62,7 @@ def verify_signature(raw_body: bytes, signature: str) -> bool:
         return False
 
     mac = hmac.new(WEBHOOK_SECRET.encode("utf-8"), raw_body, digestmod=hashlib.sha256)
-    # log mac.hexdigest() for debugging
-    logger.debug(f"Computed signature: {mac.hexdigest()}")
+    # logger.debug(f"Computed signature: {mac.hexdigest()}")
     return hmac.compare_digest(mac.hexdigest(), signature_value)
 
 # nginx will strip the prefix /mgtapi from the URL before forwarding the request to the FastAPI app
@@ -72,13 +71,13 @@ async def webhook(request: Request):
     # Retrieve the signature header from GitHub
     signature = request.headers.get("X-Hub-Signature-256")
     raw_body = await request.body()
-    logger.debug(f"Raw body (hex): {raw_body.hex()}")
-    logger.debug(f"Signature: {signature}")
+    # logger.debug(f"Raw body (hex): {raw_body.hex()}")
+    # logger.debug(f"Signature: {signature}")
 
     if not verify_signature(raw_body, signature):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
     # Trigger the deployment script asynchronously
-    #subprocess.Popen(['/bin/bash', '/home/ubuntu/deploy.sh'])
+    subprocess.Popen(['/bin/bash', '/home/ubuntu/src/examples/aqua/mgt/deploy.sh'])
 
     return {"message": "Deployment triggered"}
