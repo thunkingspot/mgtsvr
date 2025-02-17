@@ -78,6 +78,19 @@ async def webhook(request: Request):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
     # Trigger the deployment script asynchronously
-    subprocess.Popen(['/bin/bash', '/home/ubuntu/src/examples/aqua/mgt/deploy.sh'])
+    try:
+        subprocess.run(
+            [
+            '/bin/bash',
+            '/home/ubuntu/src/mgtsvr/mgt/deployrepo.sh',
+            'true',
+            'git@github.com:thunkingspot/aqua.git',
+            '/mgt/deploy.sh'
+            ],
+            check=True
+        )
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error running deployment script: {e}")
+        raise HTTPException(status_code=500, detail="Error running deployment script")
 
     return {"message": "Deployment triggered"}
