@@ -14,7 +14,7 @@
     cd $TEMP_DIR
 
     # Run the deployment script in the repo
-    /bin/bash $TEMP_DIR/$3 $DEBUG_MODE
+    /bin/bash ./$3 $DEBUG_MODE
 
     # Clean up the temporary directory
     cd $CURRENT_DIR
