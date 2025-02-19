@@ -104,3 +104,4 @@ Manual steps to create Aqua app in AWS
   1. Create a security group to allow webhook access to the management instance (sg-0669c0b51e9894f4d - management-webhook-sg), allow only the managment instance IP and the github ip range. Not using SSL, but payload is encrypted.  
   2. remove the symbolic link to nginx_aqua.conf in the aqua project and replace it with the nginx_mgtapi.conf
   3. add the webhook secret to aws secret manager and as a github repository secret. Don't use a webhook defined by github. Use a workflow_dispatch action and emulate the webhook encryption approach.
+- Install sshpass for use with automated github clone

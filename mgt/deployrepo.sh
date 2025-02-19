@@ -4,8 +4,8 @@
     fi
 
     # Start the SSH agent and add the SSH key
-    eval "$(ssh-agent -s)"
-    ssh-add ~/.ssh/id_ed25519
+    #eval "$(ssh-agent -s)"
+    #ssh-add ~/.ssh/github_ed25519
 
     # Clone git repo to temporary directory
     CURRENT_DIR=$(pwd)
