@@ -63,7 +63,8 @@ def verify_signature(raw_body: bytes, signature: str) -> bool:
         return False
 
     mac = hmac.new(WEBHOOK_SECRET.encode("utf-8"), raw_body, digestmod=hashlib.sha256)
-    # logger.debug(f"Computed signature: {mac.hexdigest()}")
+    logger.debug(f"Computed signature: {mac.hexdigest()}")
+    logger.debug(f"Payload signature: {signature_value}")
     return hmac.compare_digest(mac.hexdigest(), signature_value)
 
 # nginx will strip the prefix /mgtapi from the URL before forwarding the request to the FastAPI app
