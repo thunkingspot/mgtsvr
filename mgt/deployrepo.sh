@@ -5,6 +5,7 @@
 
     # Clean up old containers and images
     # Do this first because it will leave the current version alone
+    sudo docker stop $(sudo docker ps -q)
     sudo docker container prune -f
     sudo docker image prune -f
 
