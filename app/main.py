@@ -1,4 +1,5 @@
 import json
+import time
 import boto3
 from fastapi import FastAPI, Request, HTTPException
 import hmac
@@ -77,16 +78,41 @@ async def webhook(request: Request):
     if not verify_signature(raw_body, signature):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    debug_mode = payload.get("debug_mode")
+    repo_url = payload.get("repo_url")
+    deploy_script = payload.get("deploy_script")
+    container_name = payload.get("container_name")
+    timestamp = payload.get("timestamp")
+
+    # TODO: reject a signature that we have already seen
+
+    # If timestamp is not within 5 minutes of current time, reject the request. Also
+    # this makes the signature of every request unique, to prevent replay attacks.
+    # timestamp is produced by the shell command: date -u +"%Y-%m-%dT%H:%M:%SZ" 
+    current_time = time.time()
+    try:
+        payload_time = time.mktime(time.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ"))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid timestamp format")
+
+    if abs(current_time - payload_time) > 300:
+        raise HTTPException(status_code=403, detail="Invalid timestamp")
+
     # Trigger the deployment script asynchronously
     try:
         subprocess.run(
             [
             '/bin/bash',
             '/home/ubuntu/src/mgtsvr/mgt/deployrepo.sh',
-            'true',
-            'git@github.com:thunkingspot/aqua.git',
-            'mgt/deploy.sh',
-            'aqua-app'
+            debug_mode,
+            repo_url,
+            deploy_script,
+            container_name
             ],
             check=True
         )

@@ -2,10 +2,14 @@ name: Trigger Aqua pipeline
 on:
   workflow_dispatch:
     inputs:
-      custom_payload:
-        description: 'Optional JSON payload'
+      pipeline_name:
+        type: choice
+        description: 'Pipeline to be triggered'
         required: false
-        default: '{aqua: "trigger pipeline"}'
+        default: 'aqua'
+        options:
+          - 'aqua'
+          - 'aqua-debug'
 
 jobs:
   trigger-webhook:
@@ -14,8 +18,13 @@ jobs:
       - name: Prepare payload
         id: prepare_payload
         run: |
-          # Write the custom payload to a file (or use default JSON)
-          printf '%s' "${{ github.event.inputs.custom_payload }}" > payload.json
+          # Write the payload to a file
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua' ]]; then
+          echo '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          else [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-debug' ]];
+          echo '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          fi
           cat payload.json
 
       - name: Compute HMAC signature
