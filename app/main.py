@@ -76,6 +76,19 @@ async def webhook(request: Request):
     # logger.debug(f"Raw body (hex): {raw_body.hex()}")
     # logger.debug(f"Signature: {signature}")
 
+    # Store the last 100 signatures in a persistent memory structure
+    if not hasattr(app.state, "seen_signatures"):
+        app.state.seen_signatures = []
+
+    # Reject a signature that we have already seen
+    if signature in app.state.seen_signatures:
+        raise HTTPException(status_code=403, detail="Signature has already been used")
+
+    # Add the new signature to the list and maintain only the last 100 signatures
+    app.state.seen_signatures.append(signature)
+    if len(app.state.seen_signatures) > 100:
+        app.state.seen_signatures.pop(0)
+
     if not verify_signature(raw_body, signature):
         raise HTTPException(status_code=403, detail="Invalid signature")
 
@@ -90,8 +103,6 @@ async def webhook(request: Request):
     container_name = payload.get("container_name")
     timestamp = payload.get("timestamp")
 
-    # TODO: reject a signature that we have already seen
-
     # If timestamp is not within 5 minutes of current time, reject the request. Also
     # this makes the signature of every request unique, to prevent replay attacks.
     # timestamp is produced by the shell command: date -u +"%Y-%m-%dT%H:%M:%SZ" 
@@ -101,7 +112,7 @@ async def webhook(request: Request):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid timestamp format")
 
-    if abs(current_time - payload_time) > 300:
+    if abs(current_time - payload_time) > 5:
         raise HTTPException(status_code=403, detail="Invalid timestamp")
 
     # Trigger the deployment script asynchronously
