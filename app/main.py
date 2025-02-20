@@ -85,7 +85,8 @@ async def webhook(request: Request):
             '/home/ubuntu/src/mgtsvr/mgt/deployrepo.sh',
             'true',
             'git@github.com:thunkingspot/aqua.git',
-            'mgt/deploy.sh'
+            'mgt/deploy.sh',
+            'aqua-app'
             ],
             check=True
         )
