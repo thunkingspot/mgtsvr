@@ -5,12 +5,8 @@
 
     # Clean up old containers and images
     # Do this first because it will leave the current version alone
+    sudo docker container prune -f
     sudo docker image prune -f
-    sudo docker stop $(sudo docker ps -a -q --filter ancestor=$4)
-    containers=$(sudo docker ps -a -q --filter ancestor=$4)
-    if [ $(echo "$containers" | wc -l) -gt 1 ]; then
-      sudo docker rm $(echo "$containers" | tail -n +2)
-    fi
 
     # Clone git repo to temporary directory
     CURRENT_DIR=$(pwd)
