@@ -21,9 +21,9 @@ jobs:
           # Write the payload to a file
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua' ]]; then
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           else [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-debug' ]];
-            printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+            printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           fi
           cat payload.json
 
