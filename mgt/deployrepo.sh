@@ -16,13 +16,16 @@ sudo docker image prune -f || true
 # Clone git repo to temporary directory
 CURRENT_DIR=$(pwd)
 TEMP_DIR=$(mktemp -d)
+
+# Ensure cleanup happens even if git clone or /bin/bash fail
+trap 'echo "Cleaning up temporary directory $TEMP_DIR"; cd $CURRENT_DIR; rm -rf $TEMP_DIR' EXIT
+
 git clone $2 $TEMP_DIR
 cd $TEMP_DIR
 
 # Run the build and deploy script in the repo
 /bin/bash ./$3 $DEBUG_MODE
 
-# Clean up the temporary directory
 echo "Cleaning up temporary directory $TEMP_DIR"
 cd $CURRENT_DIR
 rm -rf $TEMP_DIR
