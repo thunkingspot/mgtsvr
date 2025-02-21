@@ -8,8 +8,10 @@ on:
         required: false
         default: 'aqua'
         options:
-          - 'aqua'
-          - 'aqua-debug'
+          - 'aqua-local'
+          - 'aqua-local-debug'
+          - 'aqua-green'
+
 
 jobs:
   trigger-webhook:
@@ -21,10 +23,12 @@ jobs:
           # Write the payload to a file. Use printf to avoid adding a newline.
           # TIMESTAMP="2025-02-20T23:05:24Z"
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua' ]]; then
+          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local' ]]; then
             printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          else [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-debug' ]];
+          else if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local-debug' ]]; then
             printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          else [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-green' ]];
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy-green.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           fi
           cat payload.json
 

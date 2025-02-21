@@ -92,6 +92,12 @@ Manual steps to create Aqua app in AWS
     sudo docker build -t aqua-app .
 - Run the docker image
     sudo docker run -d -p 80:80 aqua-app
+- other docker commands
+  sudo docker container ls
+  sudo docker container stop <id>
+  sudo docker container rm <id>
+  sudo docker images
+  sudo docker rmi <id>
 - Things that needed to be done to get app to run in container
   1. Create entrypoint.sh in root directory
       chmod +x entrypoint.sh
@@ -107,3 +113,10 @@ Manual steps to create Aqua app in AWS
   2. remove the symbolic link to nginx_aqua.conf in the aqua project and replace it with the nginx_mgtapi.conf
   3. add the webhook secret to aws secret manager and as a github repository secret. Don't use a webhook defined by github. Use a workflow_dispatch action and emulate the webhook encryption approach.
 - change github to use a key without a passphrase (for automation)
+- Setup Load balancer and API Gateway
+  - Application Load Balancer
+    - internal
+    - AZ - private thunkingspot subnets on us-west-2a and 2b
+  - API Gateway
+    - 
+  - 
