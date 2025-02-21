@@ -25,7 +25,3 @@ cd $TEMP_DIR
 
 # Run the build and deploy script in the repo
 /bin/bash ./$3 $DEBUG_MODE
-
-echo "Cleaning up temporary directory $TEMP_DIR"
-cd $CURRENT_DIR
-rm -rf $TEMP_DIR
