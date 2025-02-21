@@ -7,9 +7,11 @@ fi
 
 # Clean up old containers and images
 # Do this first because it will leave the current version alone
-sudo docker stop $(sudo docker ps -q)
-sudo docker container prune -f
-sudo docker image prune -f
+if [ "$(sudo docker ps -q)" ]; then
+  sudo docker stop $(sudo docker ps -q)
+  sudo docker container prune -f
+fi
+sudo docker image prune -f || true
 
 # Clone git repo to temporary directory
 CURRENT_DIR=$(pwd)
