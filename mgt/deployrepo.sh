@@ -5,7 +5,7 @@ if [ "$1" == "false" ]; then
   DEBUG_MODE=false
 fi
 
-# Clean up old containers and images
+# Clean up old containers and images. Don't fail if there are no containers or images to clean up.
 # Do this first because it will leave the current version alone
 if [ "$(sudo docker ps -q)" ]; then
   sudo docker stop $(sudo docker ps -q)
