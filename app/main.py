@@ -63,18 +63,17 @@ def verify_signature(raw_body: bytes, signature: str) -> bool:
         return False
 
     mac = hmac.new(WEBHOOK_SECRET.encode("utf-8"), raw_body, digestmod=hashlib.sha256)
-    logger.debug(f"Computed signature: {mac.hexdigest()}")
-    logger.debug(f"Payload signature: {signature_value}")
+    #logger.debug(f"Computed signature: {mac.hexdigest()}")
+    #logger.debug(f"Payload signature: {signature_value}")
     return hmac.compare_digest(mac.hexdigest(), signature_value)
 
-# nginx will strip the prefix /mgtapi from the URL before forwarding the request to the FastAPI app
 @app.post("/mgtapi")
 async def webhook(request: Request):
     # Retrieve the signature header from GitHub
     signature = request.headers.get("X-Hub-Signature-256")
     raw_body = await request.body()
-    # logger.debug(f"Raw body (hex): {raw_body.hex()}")
-    # logger.debug(f"Signature: {signature}")
+    #logger.debug(f"Raw body (hex): {raw_body.hex()}")
+    #logger.debug(f"Signature: {signature}")
 
     # Store the last 100 signatures in a persistent memory structure
     if not hasattr(app.state, "seen_signatures"):
@@ -103,7 +102,7 @@ async def webhook(request: Request):
     container_name = payload.get("container_name")
     timestamp = payload.get("timestamp")
 
-    # If timestamp is not within 5 minutes of current time, reject the request. Also
+    # If timestamp is not within 45 seconds of current time, reject the request. Also
     # this makes the signature of every request unique, to prevent replay attacks.
     # timestamp is produced by the shell command: date -u +"%Y-%m-%dT%H:%M:%SZ" 
     current_time = time.time()
@@ -112,7 +111,7 @@ async def webhook(request: Request):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid timestamp format")
 
-    if abs(current_time - payload_time) > 5:
+    if abs(current_time - payload_time) > 45:
         raise HTTPException(status_code=403, detail="Invalid timestamp")
 
     # Trigger the deployment script asynchronously

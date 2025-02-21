@@ -1,23 +1,26 @@
-    DEBUG_MODE=true
-    if [ "$1" == "false" ]; then
-      DEBUG_MODE=false
-    fi
+set -e
 
-    # Clean up old containers and images
-    # Do this first because it will leave the current version alone
-    sudo docker stop $(sudo docker ps -q)
-    sudo docker container prune -f
-    sudo docker image prune -f
+DEBUG_MODE=true
+if [ "$1" == "false" ]; then
+  DEBUG_MODE=false
+fi
 
-    # Clone git repo to temporary directory
-    CURRENT_DIR=$(pwd)
-    TEMP_DIR=$(mktemp -d)
-    git clone $2 $TEMP_DIR
-    cd $TEMP_DIR
+# Clean up old containers and images
+# Do this first because it will leave the current version alone
+sudo docker stop $(sudo docker ps -q)
+sudo docker container prune -f
+sudo docker image prune -f
 
-    # Run the build and deploy script in the repo
-    /bin/bash ./$3 $DEBUG_MODE
+# Clone git repo to temporary directory
+CURRENT_DIR=$(pwd)
+TEMP_DIR=$(mktemp -d)
+git clone $2 $TEMP_DIR
+cd $TEMP_DIR
 
-    # Clean up the temporary directory
-    cd $CURRENT_DIR
-    rm -rf $TEMP_DIR
+# Run the build and deploy script in the repo
+/bin/bash ./$3 $DEBUG_MODE
+
+# Clean up the temporary directory
+echo "Cleaning up temporary directory $TEMP_DIR"
+cd $CURRENT_DIR
+rm -rf $TEMP_DIR
