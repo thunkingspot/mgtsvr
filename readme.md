@@ -117,6 +117,23 @@ Manual steps to create Aqua app in AWS
   - Application Load Balancer
     - internal
     - AZ - private thunkingspot subnets on us-west-2a and 2b
+    - make sure when creating instances you select the correct subnet
+    - security groups need to allow ssh (port 22)
+    - network acls also need to allow port 22
+
+
   - API Gateway
     - 
-  - 
+  - Configuring hosts
+    - make sure aqua-key2.pem is in .ssh directory of client
+    - for creating/updating the ami you need to create an instance in the public subnet to have access to the internet and in the advanced network settings you need to enable "auto-assign public ip"
+    - ssh -i /home/ubuntu/.ssh/aqua-key2.pem 10.0.x.x
+      - when generating the pem file may need to download from a linux client - keys generated on windows client don't seem to port well.
+    - install docker (follow readme.md)
+    - create hosts (remember to add green to subnet for private2-us-west-2b)
+    - add hosts to respective target groups
+    - deploy to green
+    - change rule for port 80 to point to green.
+    - Test
+      - http://internal-thunkingspotllc-svcs-2001008918.us-west-2.elb.amazonaws.com/
+
