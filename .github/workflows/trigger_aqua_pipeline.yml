@@ -26,10 +26,10 @@ jobs:
           if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local' ]]; then
             echo "Triggering aqua-local pipeline"
             printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          else if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local-debug' ]]; then
+          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local-debug' ]]; then
             echo "Triggering aqua-local-debug pipeline"
             printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          else if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-green' ]];
+          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-green' ]]; then
             echo "Triggering aqua-green pipeline"
             printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy-green.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           else
