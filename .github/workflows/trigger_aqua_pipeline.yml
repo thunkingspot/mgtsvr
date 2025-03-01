@@ -27,7 +27,7 @@ jobs:
             printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "build", "phase_script": "buildrepo.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-deploy-inactive' ]]; then
             echo "Triggering aqua-deploy-inactive pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "deploy", "phase_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "deploy-inactive", "phase_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-swap' ]]; then
             echo "Triggering aqua-swap pipeline"
             printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "swap", "phase_script": "na", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
