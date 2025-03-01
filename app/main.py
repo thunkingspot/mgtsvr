@@ -96,9 +96,12 @@ async def webhook(request: Request):
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
 
+    # TODO - implement handling for build, deploy, swap phases with different valid payloads
     debug_mode = payload.get("debug_mode")
     repo_url = payload.get("repo_url")
-    deploy_script = payload.get("deploy_script")
+    repo_mgt_dir = payload.get("repo_mgt_dir")
+    phase = payload.get("phase")
+    phase_script = payload.get("phase_script")
     container_name = payload.get("container_name")
     timestamp = payload.get("timestamp")
 
@@ -120,10 +123,12 @@ async def webhook(request: Request):
             [
             '/bin/bash',
             '/home/ubuntu/src/mgtsvr/mgt/deployrepo.sh',
-            debug_mode,
+            container_name,
             repo_url,
-            deploy_script,
-            container_name
+            repo_mgt_dir,
+            phase,
+            phase_script,
+            debug_mode
             ],
             check=True
         )

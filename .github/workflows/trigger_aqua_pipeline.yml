@@ -8,10 +8,9 @@ on:
         required: false
         default: 'aqua'
         options:
-          - 'aqua-local'
-          - 'aqua-local-debug'
-          - 'aqua-green'
-
+          - 'aqua-build'
+          - 'aqua-deploy-inactive'
+          - 'aqua-swap'
 
 jobs:
   trigger-webhook:
@@ -23,18 +22,18 @@ jobs:
           # Write the payload to a file. Use printf to avoid adding a newline.
           # TIMESTAMP="2025-02-20T23:05:24Z"
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local' ]]; then
-            echo "Triggering aqua-local pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-local-debug' ]]; then
-            echo "Triggering aqua-local-debug pipeline"
-            printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-green' ]]; then
-            echo "Triggering aqua-green pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy-green.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-build' ]]; then
+            echo "Triggering aqua-build pipeline"
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir: mgt", "phase: build", "phase_script": "buildrepo.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-deploy-inactive' ]]; then
+            echo "Triggering aqua-deploy-inactive pipeline"
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir: mgt", "phase: deploy", "phase_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-swap' ]]; then
+            echo "Triggering aqua-swap pipeline"
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir: mgt", "phase: swap", "phase_script": "na", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           else
-            echo "Triggering default aqua-local-debug pipeline"
-            printf '%s' '{"debug_mode": "true", "repo_url": "git@github.com:thunkingspot/aqua.git", "deploy_script": "mgt/deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+            echo "Triggering default aqua-build pipeline"
+            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir: mgt", "phase: build", "phase_script": "buildrepo.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
           fi
           cat payload.json
 

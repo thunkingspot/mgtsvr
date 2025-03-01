@@ -21,12 +21,7 @@
         "ec2:DescribeLaunchTemplateVersions",
         "ec2:DescribeSecurityGroups",
         "ec2:DescribeInstanceStatus",
-        "secretsmanager:GetSecretValue",
-        "elasticloadbalancing:DescribeListeners",
-        "elasticloadbalancing:ModifyListener",
-        "elasticloadbalancing:DescribeRules",
-        "elasticloadbalancing:DescribeTargetHealth",
-        "elasticloadbalancing:DescribeTargetGroups"
+        "secretsmanager:GetSecretValue"    
       ],
       "Resource": "*"
     },

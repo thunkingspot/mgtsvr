@@ -37,5 +37,8 @@ aws ec2 create-launch-template-version \
         "SubnetId": "'$SUBNET_ID'",
         "Groups": ["'$SECURITY_GROUP_ID'"]
       }
-    ]
+    ],
+    "IamInstanceProfile": {
+      "Name": "AquaHostRole"
+    }
   }'

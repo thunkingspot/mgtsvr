@@ -12,6 +12,7 @@ Manual steps to create Aqua app in AWS
   - Attach AmazonS3FullAccess to the role
   - Attach SecretsManagerReadWrite... not sure yet if this is being used
 - Attach the AquaDeployRole to the management instance being used for deployment (might be a desktop instance).
+- Create a role AquaHostRole - to give necessary permissions to the host instances (S3, Dynamo)
 - Launch template also assumes the management instance also belongs to a security group that the app instances will also belong to. This might be more relevant if the management instance is also a development instance (e.g. a desktop instance)
 - Make sure AWS CLI is installed on the management instance.
 - Run the script CreateAquaAppLaunchTemplate to create the launch template in the AWS account.
@@ -124,9 +125,10 @@ Manual steps to create Aqua app in AWS
 
   - API Gateway
     - 
-  - Configuring hosts
+  - Configuring hosts (things that needed to be done)
     - make sure aqua-key2.pem is in .ssh directory of client
     - for creating/updating the ami you need to create an instance in the public subnet to have access to the internet and in the advanced network settings you need to enable "auto-assign public ip"
+    - Launch template needs to include a role that gives access to S3 (AquaHostRole)
     - ssh -i /home/ubuntu/.ssh/aqua-key2.pem 10.0.x.x
       - when generating the pem file may need to download from a linux client - keys generated on windows client don't seem to port well.
     - install docker (follow readme.md)
