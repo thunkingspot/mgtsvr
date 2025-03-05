@@ -22,19 +22,37 @@ jobs:
           # Write the payload to a file. Use printf to avoid adding a newline.
           # TIMESTAMP="2025-02-20T23:05:24Z"
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          if [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-build' ]]; then
-            echo "Triggering aqua-build pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "build", "phase_script": "buildrepo.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-deploy-inactive' ]]; then
-            echo "Triggering aqua-deploy-inactive pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "deploy-inactive", "phase_script": "deploy.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
-          elif [[ "${{ github.event.inputs.pipeline_name }}" == 'aqua-swap' ]]; then
-            echo "Triggering aqua-swap pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "swap", "phase_script": "na", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+          pipeline_name="${{ github.event.inputs.pipeline_name }}"
+          repo_url="git@github.com:thunkingspot/aqua.git"
+          repo_mgt_dir="mgt"
+          container_name="aqua-app"
+          debug_mode="false"
+
+          if [[ "$pipeline_name" == 'aqua-build' ]]; then
+            phase="build"
+            phase_script="buildrepo.sh"
+          elif [[ "$pipeline_name" == 'aqua-deploy-inactive' ]]; then
+            phase="deploy-inactive"
+            phase_script="deploy.sh"
+          elif [[ "$pipeline_name" == 'aqua-swap' ]]; then
+            phase="swap"
+            phase_script="na"
           else
-            echo "Triggering default aqua-build pipeline"
-            printf '%s' '{"debug_mode": "false", "repo_url": "git@github.com:thunkingspot/aqua.git", "repo_mgt_dir": "mgt", "phase": "build", "phase_script": "buildrepo.sh", "container_name": "aqua-app", "timestamp": "'$TIMESTAMP'"}' > payload.json
+            phase="build"
+            phase_script="buildrepo.sh"
           fi
+
+          echo "Triggering $pipeline_name pipeline"
+          printf '%s' '{' \
+            '"debug_mode": "'$debug_mode'", ' \
+            '"repo_url": "'$repo_url'", ' \
+            '"repo_mgt_dir": "'$repo_mgt_dir'", ' \
+            '"phase": "'$phase'", ' \
+            '"phase_script": "'$phase_script'", ' \
+            '"container_name": "'$container_name'", ' \
+            '"timestamp": "'$TIMESTAMP'"' \
+            '}' > payload.json
+
           cat payload.json
 
       - name: Compute HMAC signature

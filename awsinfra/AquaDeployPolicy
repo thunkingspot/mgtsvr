@@ -29,11 +29,6 @@
         "elasticloadbalancing:DescribeTargetGroups"
       ],
       "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::164348132997:role/EC2DynamoDbAccessRole"
     }
   ]
 }

@@ -16,40 +16,51 @@ logging.getLogger('botocore').setLevel(logging.WARNING)
 
 app = FastAPI()
 
-def get_secret():
-    secret_name = "MGTSVR_WEBHOOK_SECRET"
-    region_name = "us-west-2"
+class SecretManager:
+    _instance = None
+    _secret = None
 
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(SecretManager, cls).__new__(cls)
+        return cls._instance
 
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except Exception as e:
-        logger.error(f"Error retrieving secret: {e}")
-        raise HTTPException(status_code=500, detail="Error retrieving secret")
+    def get_secret(self):
+        if self._secret is None:
+            secret_name = "MGTSVR_WEBHOOK_SECRET"
+            region_name = "us-west-2"
 
-    secret_string = get_secret_value_response['SecretString']
-    if not secret_string:
-        raise ValueError("SecretString is empty or missing in the secret response")
-    
-    # Parse the JSON string to a dictionary
-    secret_dict = json.loads(secret_string)
-    
-    # Return the value of 'WEBHOOK_SECRET'
-    webhook_secret = secret_dict.get("WEBHOOK_SECRET")
-    if not webhook_secret:
-        raise ValueError("WEBHOOK_SECRET not found in the secret payload")
-    
-    return webhook_secret
+            # Create a Secrets Manager client
+            session = boto3.session.Session()
+            client = session.client(
+                service_name='secretsmanager',
+                region_name=region_name
+            )
 
-WEBHOOK_SECRET = get_secret()
+            try:
+                get_secret_value_response = client.get_secret_value(
+                    SecretId=secret_name
+                )
+            except Exception as e:
+                logger.error(f"Error retrieving secret: {e}")
+                raise HTTPException(status_code=500, detail="Error retrieving secret")
+
+            secret_string = get_secret_value_response['SecretString']
+            if not secret_string:
+                raise ValueError("SecretString is empty or missing in the secret response")
+            
+            # Parse the JSON string to a dictionary
+            secret_dict = json.loads(secret_string)
+            
+            # Return the value of 'WEBHOOK_SECRET'
+            webhook_secret = secret_dict.get("WEBHOOK_SECRET")
+            if not webhook_secret:
+                raise ValueError("WEBHOOK_SECRET not found in the secret payload")
+            
+            self._secret = webhook_secret
+        return self._secret
+
+secret_manager = SecretManager()
 
 def verify_signature(raw_body: bytes, signature: str) -> bool:
     if not signature:
@@ -62,7 +73,7 @@ def verify_signature(raw_body: bytes, signature: str) -> bool:
     if sha_name != "sha256":
         return False
 
-    mac = hmac.new(WEBHOOK_SECRET.encode("utf-8"), raw_body, digestmod=hashlib.sha256)
+    mac = hmac.new(secret_manager.get_secret().encode("utf-8"), raw_body, digestmod=hashlib.sha256)
     #logger.debug(f"Computed signature: {mac.hexdigest()}")
     #logger.debug(f"Payload signature: {signature_value}")
     return hmac.compare_digest(mac.hexdigest(), signature_value)
