@@ -12,7 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-Manual steps to create Aqua app in AWS
+Blue-Green Deployment Management Instance
+This project contains a service that implements an endpoint for an AWS management instance.
+- The service provides an endpoint that can be called by a github action to manage build and deployment of the Aqua application. It could be extended to manage multiple build and deploy targets.
+- The github action is thin. It uses the workflow dispatch mechanism to trigger the stages of a blue-green deployment.
+  - Build phase - Management instance will fetch the target repo and call it's build interface to create a  docker container. The deployment artifacts are placed in a staging location on the management instance.
+  - Deploy Inactive phase - Management instance will determine which target group behind an Elastic Load Balancer is inactive and copy the deployment artifacts to the target. Currently only one instance per target group is supported but that could be extended. The deployment artifacts are executed on the target.
+  - Swap phase - the inactive group is swapped with the active group on the ELB
+  - Normally Deploy Inactive would be triggered again to update the newly inactive target group.
+
+
+Manual steps to configure Management Instance and AWS for blue-green deployment
 - Create an ed25519 pem key pair in the AWS account named aqua-key as ssh key for managed instances. Public key should be placed in aqua/ssh/aqua-key.pem
 - Create policy called AquaDeployRole using aqua/awsinfra/AquaDeployPolicy 
   - Consider whether the policy should only be allowed to be applied to the management instance...

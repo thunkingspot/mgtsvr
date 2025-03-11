@@ -37,12 +37,11 @@ if [ "$PHASE" == "build" ]; then
   echo "Building Docker image..."
   # /bin/bash mgt/deployrepo.sh aqua-app git@github.com:thunkingspot/aqua.git mgt build buildrepo.sh false
 
-  # Create temporary directory for cloning the repo. Rememeber current directory.
-  CURRENT_DIR=$(pwd)
+  # Create temporary directory for cloning the repo.
   TEMP_DIR=$(mktemp -d)
 
   # Ensure cleanup happens even if git clone or /bin/bash fail
-  #trap 'echo "Cleaning up temporary directory $TEMP_DIR"; cd $CURRENT_DIR; rm -rf $TEMP_DIR' EXIT
+  trap 'echo "Cleaning up temporary directory $TEMP_DIR"; rm -rf $TEMP_DIR' EXIT
 
   # Clone the repo to a temp directory
   git clone $REPO_URL $TEMP_DIR
